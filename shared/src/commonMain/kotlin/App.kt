@@ -7,35 +7,28 @@ import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import model.Answer
-import model.Question
+import data.dataSource.QuestionsLocalDataSource
+import data.repository.QuizRepository
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import ui.questionScreen
 
+
+private val repository = QuizRepository()
 @Composable
 fun App() {
     MaterialTheme {
-        var questions = listOf(
-            Question(
-                1,
-                "Android is a great platform ?",
-                1,
-                listOf(Answer(1, "YES"), Answer(2, "NO"))
-            ),
-            Question(
-                1,
-                "Android is a bad platform ?",
-                2,
-                listOf(Answer(1, "YES"), Answer(2, "NO"))
-            )
-        )
-        questionScreen(questions)
+        val questions = repository.questionScope.collectAsState()
+        if(questions.value.isNotEmpty()) {
+            questionScreen(questions.value)
+        }
     }
 }
 
@@ -59,7 +52,9 @@ private fun defaultComposable() {
         }
     }
 }
+
 expect fun getPlatformName(): String
+
 @Preview
 @Composable
 fun AppPreview() {
